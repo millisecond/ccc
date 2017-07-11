@@ -5,16 +5,41 @@ import (
 	"net/http"
 	"strconv"
 	"errors"
-	"encoding/json"
+	"github.com/hashicorp/golang-lru"
+	"sync"
 )
 
+const CACHE_SIZE = 128
 const LOCAL_PREFIX = "~/.crawlcoin/dictionaries/"
 const REMOTE_PREFIX = "https://dictionaries.crawlcoin.com/"
 const SHARED = "shared"
 var INVALID_HOSTS = map[string]bool{"shared":true}
 
+var cache *lru.Cache
+var lruMutex = &sync.RWMutex{}
+
+var localOverride func(path string, version int) []byte
+var remoteOverride func(path string, version int) []byte
+
 type Version struct {
 	Version int
+}
+
+func initCache() error {
+	if cache != nil {
+		return nil
+	}
+	lruMutex.Lock()
+	defer lruMutex.Unlock()
+	if cache != nil {
+		return nil
+	}
+	var err error
+	cache, err = lru.New(CACHE_SIZE)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func Combined(host string, version int, sharedVersion int) ([]byte, error) {
@@ -37,10 +62,6 @@ func SharedDictionary(version int) ([]byte, error) {
 	return fileOrRemote(SHARED, version)
 }
 
-func SharedDictionaryLatest() (int, []byte, error) {
-	return 0, nil, nil
-}
-
 func HostDictionary(host string, version int) ([]byte, error) {
 	if _, prs := INVALID_HOSTS[host]; prs {
 		return nil, errors.New("Invalid host, some names are reserved.")
@@ -48,54 +69,53 @@ func HostDictionary(host string, version int) ([]byte, error) {
 	return fileOrRemote(host, version)
 }
 
-func HostDictionaryLatest(host string) (int, []byte, error) {
-	if _, prs := INVALID_HOSTS[host]; prs {
-		return 0, nil, errors.New("Invalid host, some names are reserved.")
-	}
-	return 0, nil, nil
-}
-
-func latestVersion(relativePath string) (int, error) {
-	remote, err := http.Get(REMOTE_PREFIX + relativePath)
-	if remote != nil && remote.Body != nil {
-		defer remote.Body.Close()
-	}
-	if err != nil {
-		return 0, err
-	}
-	remoteBytes, err := ioutil.ReadAll(remote.Body)
-	if err != nil {
-		return 0, err
-	}
-	v := &Version{}
-	err = json.Unmarshal(remoteBytes, v)
-	if err != nil {
-		return 0, err
-	}
-	return v.Version, nil
-}
-
 func fileOrRemote(relativePath string, version int) ([]byte, error) {
+	var dict []byte
+	var err error
 	localFilename := LOCAL_PREFIX + relativePath + "/" + strconv.Itoa(version) + ".dict"
-	local, err := ioutil.ReadFile(localFilename)
-	if err != nil {
-		return nil, err
+	dict, err = func() ([]byte, error) {
+		err := initCache()
+		if err != nil {
+			return nil, err
+		}
+		c, pres := cache.Get(localFilename)
+		if !pres {
+			return nil, nil
+		}
+		return c.([]byte), nil
+	}()
+	if len(dict) > 0 {
+		return dict, nil
 	}
-	if len(local) > 0 {
-		return local, nil
+	if localOverride == nil {
+		if dict, err = ioutil.ReadFile(localFilename); err != nil {
+			return nil, err
+		}
+	} else {
+		dict = localOverride(relativePath, version)
 	}
-	remote, err := http.Get(REMOTE_PREFIX + relativePath)
-	if remote != nil && remote.Body != nil {
-		defer remote.Body.Close()
+	if len(dict) > 0 {
+		cache.Add(localFilename, dict)
+		return dict, nil
 	}
-	if err != nil {
-		return nil, err
+	if remoteOverride == nil {
+		resp, err := http.Get(REMOTE_PREFIX + relativePath)
+		if resp != nil && resp.Body != nil {
+			defer resp.Body.Close()
+		}
+		if err != nil {
+			return nil, err
+		}
+		if dict, err = ioutil.ReadAll(resp.Body); err != nil {
+			return nil, err
+		}
+	} else {
+		dict = remoteOverride(relativePath, version)
 	}
-	remoteBytes, err := ioutil.ReadAll(remote.Body)
-	if err != nil {
-		return nil, err
+	if len(dict) > 0 {
+		cache.Add(localFilename, dict)
+		// Write it out to cache for next time.
+		ioutil.WriteFile(localFilename, dict, 0644)
 	}
-	// Write it out to cache for next time.
-	ioutil.WriteFile(localFilename, remoteBytes, 0644)
-	return remoteBytes, nil
+	return dict, nil
 }
