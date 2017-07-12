@@ -1,4 +1,4 @@
-package ccz
+package ccc
 
 import (
 	"testing"
