@@ -1,11 +1,11 @@
 
-## Crawlcoin File Compression
+## Crawlcoin Compression
 
 Please see the [documentation](https://github.com/Crawlcoin/documentation) for details on Crawlcoin generally. 
 
 ### Overview
 
-We control both the client and server and timing/size of compression in many cases.  This control allows us to define custom dictionaries which can radically lower the size of storage and trasmission which are our largest costs.  
+A wrapper around Brotli compression with custom dictionaries.  Controlling both client and server we can create domain-specific dictionaries that offer much higher compression ratios than a standard approach. 
 
 Each dictionary is static for that version and accessible by a constant URL scheme: 
 

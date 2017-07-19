@@ -1,8 +1,8 @@
 package ccc
 
 import (
-	"testing"
 	"github.com/facebookgo/ensure"
+	"testing"
 )
 
 func TestAppend(t *testing.T) {
@@ -40,4 +40,3 @@ func TestVersions(t *testing.T) {
 	ensure.DeepEqual(t, localCalls, 2)
 	ensure.DeepEqual(t, remoteCalls, 1)
 }
-

@@ -1,0 +1,3 @@
+package ccc
+
+// CLI wrapper

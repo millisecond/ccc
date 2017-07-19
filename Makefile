@@ -41,7 +41,7 @@ bench:
 	go test ./... -short -bench=.
 
 fmt:
-	gofmt -w `find . -type f -name '*.go' | grep -v vendor`
+	go fmt ./...
 
 commit: fmt fulltest
 	git commit -a

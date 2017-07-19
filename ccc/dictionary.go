@@ -1,11 +1,11 @@
 package ccc
 
 import (
+	"errors"
+	"github.com/hashicorp/golang-lru"
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"errors"
-	"github.com/hashicorp/golang-lru"
 	"sync"
 )
 
@@ -13,7 +13,8 @@ const CACHE_SIZE = 128
 const LOCAL_PREFIX = "~/.crawlcoin/dictionaries/"
 const REMOTE_PREFIX = "https://dictionaries.crawlcoin.com/"
 const SHARED = "shared"
-var INVALID_HOSTS = map[string]bool{"shared":true}
+
+var INVALID_HOSTS = map[string]bool{"shared": true}
 
 var cache *lru.Cache
 var lruMutex = &sync.RWMutex{}
@@ -118,4 +119,8 @@ func fileOrRemote(relativePath string, version int) ([]byte, error) {
 		ioutil.WriteFile(localFilename, dict, 0644)
 	}
 	return dict, nil
+}
+
+func Create(sample []byte) string {
+	return ""
 }
