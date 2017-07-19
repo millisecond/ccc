@@ -5,6 +5,7 @@ import (
 	"compress/zlib"
 	"fmt"
 	"github.com/crawlcoin/brotli-go/enc"
+	"github.com/crawlcoin/crawlcoin/util"
 	"github.com/facebookgo/ensure"
 	"github.com/vkrasnov/dictator"
 	"io/ioutil"
@@ -17,7 +18,6 @@ import (
 	"strconv"
 	"testing"
 	"time"
-	"github.com/crawlcoin/crawlcoin/util"
 )
 
 type Stats struct {
