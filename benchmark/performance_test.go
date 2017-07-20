@@ -40,7 +40,7 @@ func (s *Stats) End() {
 	s.Time += time.Since(s.start)
 }
 
-func TestBrotliVsZip(t *testing.T) {
+func TestBrotliVsZlib(t *testing.T) {
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
@@ -61,13 +61,6 @@ func TestBrotliVsZip(t *testing.T) {
 	windowSize := 1024 * 16
 	dictSize := 1024 * 16
 
-	progress := make(chan float64, len(files))
-	go func() {
-		for percent := range progress {
-			fmt.Printf("\r%.2f%% ", percent)
-		}
-	}()
-
 	dictFiles := []string{}
 	for _, file := range files {
 		b, err := ioutil.ReadFile(file)
@@ -76,7 +69,7 @@ func TestBrotliVsZip(t *testing.T) {
 			dictFiles = append(dictFiles, file)
 		}
 	}
-	table := dictator.GenerateTable(windowSize, dictFiles, 4, progress, runtime.NumCPU())
+	table := dictator.GenerateTable(windowSize, dictFiles, 4, nil, runtime.NumCPU())
 	dict := []byte(dictator.GenerateDictionary(table, dictSize, int(math.Ceil(float64(len(dictFiles))*0.01))))
 
 	log.Println("Generated dict of length: ", len(dict))
