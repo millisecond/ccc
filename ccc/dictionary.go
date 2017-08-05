@@ -60,12 +60,18 @@ func Append(dict1 []byte, dict2 []byte) []byte {
 }
 
 func SharedDictionary(version int) ([]byte, error) {
+	if version == 0 {
+		return []byte{}, nil
+	}
 	return fileOrRemote(SHARED, version)
 }
 
 func HostDictionary(host string, version int) ([]byte, error) {
 	if _, prs := INVALID_HOSTS[host]; prs {
 		return nil, errors.New("Invalid host, some names are reserved.")
+	}
+	if version == 0 {
+		return []byte{}, nil
 	}
 	return fileOrRemote(host, version)
 }

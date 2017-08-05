@@ -40,3 +40,13 @@ func TestVersions(t *testing.T) {
 	ensure.DeepEqual(t, localCalls, 2)
 	ensure.DeepEqual(t, remoteCalls, 1)
 }
+
+func TestZeroDictVersion(t *testing.T) {
+	shared, err := SharedDictionary(0)
+	ensure.Nil(t, err)
+	ensure.DeepEqual(t, shared, []byte{})
+
+	custom, err := HostDictionary("crawlcoin.com", 0)
+	ensure.Nil(t, err)
+	ensure.DeepEqual(t, custom, []byte{})
+}

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"compress/zlib"
 	"fmt"
-	"github.com/crawlcoin/brotli-go/enc"
+	"gopkg.in/kothar/brotli-go.v0/enc"
 	"github.com/crawlcoin/crawlcoin/util"
 	"github.com/facebookgo/ensure"
 	"github.com/vkrasnov/dictator"
