@@ -3,6 +3,7 @@ package ccc
 import (
 	"github.com/facebookgo/ensure"
 	"testing"
+	"github.com/crawlcoin/ccc/providers"
 )
 
 func TestAppend(t *testing.T) {
@@ -10,43 +11,23 @@ func TestAppend(t *testing.T) {
 }
 
 func TestVersions(t *testing.T) {
-	localCalls := 0
-	remoteCalls := 0
-	localOverride = func(path string, version int) []byte {
-		localCalls += 1
-		if version != 1 {
-			return nil
-		}
-		return []byte("LOCAL")
-	}
+	provider := providers.MemoryDictionaryProvider{}
+	provider.SharedDictionaries = map[int][]byte{1: []byte("SHARED")}
+	provider.CustomDictionaries = map[string]map[int][]byte{"": {1: []byte("CUSTOM")}}
 
-	remoteOverride = func(path string, version int) []byte {
-		remoteCalls += 1
-		return []byte("REMOTE")
-	}
-
-	combined, err := Combined("", 1, 2)
+	combined, err := Combined(provider, "", 1, 1)
 	ensure.Nil(t, err)
-	ensure.DeepEqual(t, string(combined), "LOCALREMOTE")
-
-	ensure.DeepEqual(t, localCalls, 2)
-	ensure.DeepEqual(t, remoteCalls, 1)
-
-	// Test LRU cache
-	combined, err = Combined("", 1, 2)
-	ensure.Nil(t, err)
-	ensure.DeepEqual(t, string(combined), "LOCALREMOTE")
-
-	ensure.DeepEqual(t, localCalls, 2)
-	ensure.DeepEqual(t, remoteCalls, 1)
+	ensure.DeepEqual(t, string(combined), "CUSTOMSHARED")
 }
 
 func TestZeroDictVersion(t *testing.T) {
-	shared, err := SharedDictionary(0)
+	provider := providers.FileDictionaryProvider{}
+
+	shared, err := SharedDictionary(provider, 0)
 	ensure.Nil(t, err)
 	ensure.DeepEqual(t, shared, []byte{})
 
-	custom, err := HostDictionary("crawlcoin.com", 0)
+	custom, err := HostDictionary(provider, "crawlcoin.com", 0)
 	ensure.Nil(t, err)
 	ensure.DeepEqual(t, custom, []byte{})
 }
