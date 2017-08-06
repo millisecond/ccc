@@ -6,10 +6,10 @@ import (
 	"github.com/crawlcoin/ccc/providers"
 )
 
-func Compress(provider providers.DictionaryProvider, b []byte, host string, hostVersion int, sharedVersion int) ([]byte, error) {
+func Compress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
 	var err error
 	var encoded []byte
-	dict, err := Combined(provider, host, hostVersion, sharedVersion)
+	dict, err := Combined(provider, id, customVersion, sharedVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -24,10 +24,10 @@ func Compress(provider providers.DictionaryProvider, b []byte, host string, host
 	return encoded, nil
 }
 
-func Decompress(provider providers.DictionaryProvider, b []byte, host string, hostVersion int, sharedVersion int) ([]byte, error) {
+func Decompress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
 	var err error
 	var decoded []byte
-	dict, err := Combined(provider, host, hostVersion, sharedVersion)
+	dict, err := Combined(provider, id, customVersion, sharedVersion)
 	if err != nil {
 		return nil, err
 	}

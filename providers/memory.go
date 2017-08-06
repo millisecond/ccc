@@ -15,8 +15,8 @@ func (p MemoryDictionaryProvider) SharedDictionary(version int) ([]byte, error) 
 }
 
 func (p MemoryDictionaryProvider) CustomDictionary(id string, version int) ([]byte, error) {
-	if hostDictionaries, pres := p.CustomDictionaries[id]; pres {
-		if dict, pres := hostDictionaries[version]; pres {
+	if customs, pres := p.CustomDictionaries[id]; pres {
+		if dict, pres := customs[version]; pres {
 			return dict, nil
 		}
 	}

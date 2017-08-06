@@ -27,7 +27,7 @@ func TestZeroDictVersion(t *testing.T) {
 	ensure.Nil(t, err)
 	ensure.DeepEqual(t, shared, []byte{})
 
-	custom, err := HostDictionary(provider, "crawlcoin.com", 0)
+	custom, err := CustomDictionary(provider, "crawlcoin.com", 0)
 	ensure.Nil(t, err)
 	ensure.DeepEqual(t, custom, []byte{})
 }
