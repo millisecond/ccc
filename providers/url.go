@@ -1,46 +1,81 @@
 package providers
 
 import (
-	"strconv"
 	"github.com/hashicorp/golang-lru"
-	"sync"
 	"io/ioutil"
 	"net/http"
+	"strconv"
+	"sync"
 )
 
-const CACHE_SIZE = 128
-const LOCAL_PREFIX = "~/.crawlcoin/dictionaries/"
-const REMOTE_PREFIX = "https://dictionaries.crawlcoin.com/"
-
-var cache *lru.Cache
-var lruMutex = &sync.RWMutex{}
+const DEFAULT_CACHE_SIZE = 512
 
 type URLDictionaryProvider struct {
 	BaseSharedURL string
 	BaseCustomURL string
-	UseMemoryCache    bool
-	UseFSCache    bool
+
+	UseMemoryCache  bool
+	MemoryCacheSize int
+
+	UseFSCache     bool
+	FSSharedPrefix string
+	FSCustomPrefix string
+
+	mut    sync.RWMutex
+	lruMut sync.RWMutex
+	cache  *lru.Cache
 }
 
-func (p URLDictionaryProvider) SharedDictionary(version int) ([]byte, error) {
-	return nil, nil
+// Create a basic URL provider, all requests will go over HTTP
+func NewURLDictionaryProvider(BaseSharedURL string, BaseCustomURL string) *URLDictionaryProvider {
+	return &URLDictionaryProvider{
+		BaseSharedURL: BaseSharedURL,
+		BaseCustomURL: BaseCustomURL,
+	}
 }
 
-func (p URLDictionaryProvider) CustomDictionary(id string, version int) ([]byte, error) {
-	return nil, nil
+// More complicated constructor with caching options
+func NewCachedURLDictionaryProvider(BaseSharedURL string, BaseCustomURL string, UseMemoryCache bool, MemoryCacheSize int, UseFSCache bool, FSSharedPrefix string, FSCustomPrefix string) (*URLDictionaryProvider, error) {
+	p := NewURLDictionaryProvider(BaseSharedURL, BaseCustomURL)
+	p.UseMemoryCache = UseMemoryCache
+	p.MemoryCacheSize = MemoryCacheSize
+	p.UseFSCache = UseFSCache
+	p.FSSharedPrefix = FSSharedPrefix
+	p.FSCustomPrefix = FSCustomPrefix
+	if p.UseMemoryCache {
+		p.lruMut.Lock()
+		defer p.lruMut.Unlock()
+		if p.MemoryCacheSize == 0 {
+			p.MemoryCacheSize = DEFAULT_CACHE_SIZE
+		}
+		var err error
+		p.cache, err = lru.New(p.MemoryCacheSize)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return p, nil
 }
 
-func (p URLDictionaryProvider) fileOrRemote(relativePath string, version int) ([]byte, error) {
+func (p *URLDictionaryProvider) SharedDictionary(version int) ([]byte, error) {
+	return p.fileOrRemote(p.BaseSharedURL, "", true, version)
+}
+
+func (p *URLDictionaryProvider) CustomDictionary(id string, version int) ([]byte, error) {
+	return p.fileOrRemote(p.BaseCustomURL, id+"/", false, version)
+}
+
+func (p *URLDictionaryProvider) fileOrRemote(base string, path string, shared bool, version int) ([]byte, error) {
 	var dict []byte
 	var err error
-	localFilename := LOCAL_PREFIX + relativePath + "/" + strconv.Itoa(version) + ".dict"
+	localFilename := p.FSCustomPrefix
+	if shared {
+		localFilename = p.FSSharedPrefix
+	}
+	localFilename += path + "/" + strconv.Itoa(version) + ".dict"
 	if p.UseMemoryCache {
 		dict, err = func() ([]byte, error) {
-			err := initCache()
-			if err != nil {
-				return nil, err
-			}
-			c, pres := cache.Get(localFilename)
+			c, pres := p.cache.Get(localFilename)
 			if !pres {
 				return nil, nil
 			}
@@ -56,10 +91,11 @@ func (p URLDictionaryProvider) fileOrRemote(relativePath string, version int) ([
 		}
 	}
 	if p.UseMemoryCache && len(dict) > 0 {
-		cache.Add(localFilename, dict)
+		p.cache.Add(localFilename, dict)
 		return dict, nil
 	}
-	resp, err := http.Get(REMOTE_PREFIX + relativePath)
+	url := base + path + strconv.Itoa(version)
+	resp, err := http.Get(url)
 	if resp != nil && resp.Body != nil {
 		defer resp.Body.Close()
 	}
@@ -71,7 +107,7 @@ func (p URLDictionaryProvider) fileOrRemote(relativePath string, version int) ([
 	}
 	if len(dict) > 0 {
 		if p.UseMemoryCache {
-			cache.Add(localFilename, dict)
+			p.cache.Add(localFilename, dict)
 		}
 		if p.UseFSCache {
 			// Write it out to cache for next time.
@@ -79,21 +115,4 @@ func (p URLDictionaryProvider) fileOrRemote(relativePath string, version int) ([
 		}
 	}
 	return dict, nil
-}
-
-func initCache() error {
-	if cache != nil {
-		return nil
-	}
-	lruMutex.Lock()
-	defer lruMutex.Unlock()
-	if cache != nil {
-		return nil
-	}
-	var err error
-	cache, err = lru.New(CACHE_SIZE)
-	if err != nil {
-		return err
-	}
-	return nil
 }

@@ -1,9 +1,9 @@
 package ccc
 
 import (
-	"gopkg.in/kothar/brotli-go.v0/enc"
-	"gopkg.in/kothar/brotli-go.v0/dec"
 	"github.com/crawlcoin/ccc/providers"
+	"gopkg.in/kothar/brotli-go.v0/dec"
+	"gopkg.in/kothar/brotli-go.v0/enc"
 )
 
 func Compress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {

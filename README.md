@@ -7,7 +7,7 @@ Please see the [documentation](https://github.com/Crawlcoin/documentation) for d
 
 A wrapper around Brotli compression with custom dictionaries.  Controlling both client and server we can create domain-specific dictionaries that offer much higher compression ratios than a standard approach. 
 
-Each dictionary is static for that version and accessible by a constant URL scheme: 
+Each dictionary is static for that version which allows for aggressive caching and accessible by a constant URL scheme:
 
 Examples: 
 
