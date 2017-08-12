@@ -1,0 +1,61 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "mrz/kicZiUaHxkyfvC/DyQcr8Do=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "adab96458c51a58dc1783b3335dcce5461522e75",
+			"revisionTime": "2017-07-11T18:34:51Z"
+		},
+		{
+			"checksumSHA1": "DSKGn08DPp1+9p1xdwoVQY0IuV4=",
+			"path": "github.com/facebookgo/ensure",
+			"revision": "b4ab57deab51ee655ae4bd85281f0715a068016d",
+			"revisionTime": "2016-01-27T19:34:07Z"
+		},
+		{
+			"checksumSHA1": "R7YqZ9k/RtXzCqV9cPMmsfe4oX8=",
+			"path": "github.com/facebookgo/stack",
+			"revision": "751773369052141c013c6e827a71e8f35c07879c",
+			"revisionTime": "2016-02-09T18:44:15Z"
+		},
+		{
+			"checksumSHA1": "Wk4dPOjYwppJZJU5XXe5RZL6Mjc=",
+			"path": "github.com/facebookgo/subset",
+			"revision": "8dac2c3c48703541e481feddf22975953d4ff842",
+			"revisionTime": "2015-06-12T18:29:17Z"
+		},
+		{
+			"checksumSHA1": "d9PxF1XQGLMJZRct2R8qVM/eYlE=",
+			"path": "github.com/hashicorp/golang-lru",
+			"revision": "0a025b7e63adc15a622f29b0b2c4c3848243bbf6",
+			"revisionTime": "2016-08-13T22:13:03Z"
+		},
+		{
+			"checksumSHA1": "9hffs0bAIU6CquiRhKQdzjHnKt0=",
+			"path": "github.com/hashicorp/golang-lru/simplelru",
+			"revision": "0a025b7e63adc15a622f29b0b2c4c3848243bbf6",
+			"revisionTime": "2016-08-13T22:13:03Z"
+		},
+		{
+			"checksumSHA1": "rGfA/VKtGOYsbnphgNdP8+Q4DDQ=",
+			"path": "gopkg.in/kothar/brotli-go.v0/dec",
+			"revision": "771231d473d6c4896e97c2b6e3855f1afc0cdada",
+			"revisionTime": "2017-07-28T08:15:49Z"
+		},
+		{
+			"checksumSHA1": "KdNtBsVeGmB3JLRGVaGoeT5xHrc=",
+			"path": "gopkg.in/kothar/brotli-go.v0/enc",
+			"revision": "771231d473d6c4896e97c2b6e3855f1afc0cdada",
+			"revisionTime": "2017-07-28T08:15:49Z"
+		},
+		{
+			"checksumSHA1": "TOxnpHm08bkZWcTvVo4Sq5+q4L4=",
+			"path": "gopkg.in/kothar/brotli-go.v0/shared",
+			"revision": "771231d473d6c4896e97c2b6e3855f1afc0cdada",
+			"revisionTime": "2017-07-28T08:15:49Z"
+		}
+	],
+	"rootPath": "github.com/crawlcoin/ccc"
+}

@@ -15,7 +15,7 @@ build:
 	$(GO) build -i $(GOFLAGS)
 
 test:
-	@time $(GO) test -short -race -test.timeout 15s `go list ./... | grep -v '/vendor/' | grep -v '/benchmark'`
+	@time $(GO) test -short -race -test.timeout 15s `go list ./... | grep -v '/vendor/'`
 	@if [ $$? -eq 0 ] ; then \
 		echo "All tests PASSED" ; \
 	else \
