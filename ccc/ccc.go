@@ -4,9 +4,14 @@ import (
 	"github.com/crawlcoin/ccc/providers"
 	"gopkg.in/kothar/brotli-go.v0/dec"
 	"gopkg.in/kothar/brotli-go.v0/enc"
+	"compress/zlib"
+	"bytes"
+	"io"
+	"io/ioutil"
 )
 
-func Compress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
+// Given a dictionary provider, compress some bytes with Brotli using versioned dictionaries.  Use 0 to ignore that type of dictionary.
+func BrotliCompress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
 	var err error
 	var encoded []byte
 	dict, err := Combined(provider, id, customVersion, sharedVersion)
@@ -24,7 +29,8 @@ func Compress(provider providers.DictionaryProvider, b []byte, id string, custom
 	return encoded, nil
 }
 
-func Decompress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
+// Given a dictionary provider, decompress some bytes with Brotli using versioned dictionaries.  Use 0 to ignore that type of dictionary.
+func BrotliDecompress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
 	var err error
 	var decoded []byte
 	dict, err := Combined(provider, id, customVersion, sharedVersion)
@@ -40,4 +46,51 @@ func Decompress(provider providers.DictionaryProvider, b []byte, id string, cust
 		return nil, err
 	}
 	return decoded, nil
+}
+
+// Given a dictionary provider, compress some bytes with zlib using versioned dictionaries.  Use 0 to ignore that type of dictionary.
+func ZlibCompress(provider providers.DictionaryProvider, level int, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
+	var err error
+	dict, err := Combined(provider, id, customVersion, sharedVersion)
+	if err != nil {
+		return nil, err
+	}
+	var w *zlib.Writer
+	var zipOut bytes.Buffer
+	if dict != nil && len(dict) > 0 {
+		w, err = zlib.NewWriterLevelDict(&zipOut, level, dict)
+	} else {
+		w, err = zlib.NewWriterLevel(&zipOut, level)
+	}
+	if err != nil {
+		return nil, err
+	}
+	_, err = w.Write(b)
+	if err != nil {
+		return nil, err
+	}
+	err = w.Close()
+	if err != nil {
+		return nil, err
+	}
+	return zipOut.Bytes(), nil
+}
+
+// Given a dictionary provider, decompress some bytes with zlib using versioned dictionaries.  Use 0 to ignore that type of dictionary.
+func ZlibDecompress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
+	var err error
+	dict, err := Combined(provider, id, customVersion, sharedVersion)
+	if err != nil {
+		return nil, err
+	}
+	var r io.ReadCloser
+	if dict != nil && len(dict) > 0 {
+		r, err = zlib.NewReaderDict(bytes.NewReader(b), dict)
+	} else {
+		r, err = zlib.NewReader(bytes.NewReader(b))
+	}
+	if err != nil {
+		return nil, err
+	}
+	return ioutil.ReadAll(r)
 }
