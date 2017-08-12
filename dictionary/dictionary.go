@@ -1,4 +1,4 @@
-package ccc
+package dictionary
 
 import (
 	"errors"

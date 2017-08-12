@@ -1,4 +1,4 @@
-package ccc
+package dictionary
 
 import (
 	"github.com/crawlcoin/ccc/providers"

@@ -1,11 +1,12 @@
 package ccc
 
 import (
+	"bytes"
+	"compress/zlib"
+	"github.com/crawlcoin/ccc/dictionary"
 	"github.com/crawlcoin/ccc/providers"
 	"gopkg.in/kothar/brotli-go.v0/dec"
 	"gopkg.in/kothar/brotli-go.v0/enc"
-	"compress/zlib"
-	"bytes"
 	"io"
 	"io/ioutil"
 )
@@ -14,7 +15,7 @@ import (
 func BrotliCompress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
 	var err error
 	var encoded []byte
-	dict, err := Combined(provider, id, customVersion, sharedVersion)
+	dict, err := dictionary.Combined(provider, id, customVersion, sharedVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +34,7 @@ func BrotliCompress(provider providers.DictionaryProvider, b []byte, id string, 
 func BrotliDecompress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
 	var err error
 	var decoded []byte
-	dict, err := Combined(provider, id, customVersion, sharedVersion)
+	dict, err := dictionary.Combined(provider, id, customVersion, sharedVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +52,7 @@ func BrotliDecompress(provider providers.DictionaryProvider, b []byte, id string
 // Given a dictionary provider, compress some bytes with zlib using versioned dictionaries.  Use 0 to ignore that type of dictionary.
 func ZlibCompress(provider providers.DictionaryProvider, level int, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
 	var err error
-	dict, err := Combined(provider, id, customVersion, sharedVersion)
+	dict, err := dictionary.Combined(provider, id, customVersion, sharedVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +80,7 @@ func ZlibCompress(provider providers.DictionaryProvider, level int, b []byte, id
 // Given a dictionary provider, decompress some bytes with zlib using versioned dictionaries.  Use 0 to ignore that type of dictionary.
 func ZlibDecompress(provider providers.DictionaryProvider, b []byte, id string, customVersion int, sharedVersion int) ([]byte, error) {
 	var err error
-	dict, err := Combined(provider, id, customVersion, sharedVersion)
+	dict, err := dictionary.Combined(provider, id, customVersion, sharedVersion)
 	if err != nil {
 		return nil, err
 	}

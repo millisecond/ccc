@@ -1,29 +1,46 @@
 
-## Crawlcoin Compression
+# Crawlcoin Compression
 
-Please see the [documentation](https://github.com/Crawlcoin/documentation) for details on Crawlcoin generally. 
+A wrapper around Zlib and Brotli that lazy-loads versioned compression dictionaries over HTTP, file-system, or memory.  Supports both a shared dictionary and a per-ID custom dictionary.  The ID can be anything app-specific, commonly a domain name.
 
-### Overview
+Dictionaries can be manually created or by using [dictator](https://github.com/vkrasnov/dictator).
 
-A wrapper around Brotli compression with custom dictionaries.  Controlling both client and server we can create domain-specific dictionaries that offer much higher compression ratios than a standard approach. 
+Part of the [Crawlcoin](https://crawlcoin.com) system but generally usable.
 
-Each dictionary is static for that version which allows for aggressive caching and accessible by a constant URL scheme:
+Overview
+---
 
-Examples: 
+Each dictionary must be static for that id/version.  If a new dictionary is created, the version should be bumped.  This allows for backward compatibility with any existing compressed file while allowing refinement over time.  The version of the dictionary used to compress some bytes is not included in the compressed file and must be stored separately.
 
-(https://dictionaries.crawlcoin.com/shared/1.dict)[https://dictionaries.crawlcoin.com/shared/1.dict] is the v1 file of our shared dictionary. 
+If 0 is specified for a particular dictionary, no dictionary is used (including shared).
 
-(https://dictionaries.crawlcoin.com/host/cnn.com/2.dict)[https://dictionaries.crawlcoin.com/host/cnn.com/2.dict] is the v2 file of a dictionary for `cnn.com` this base file will never change - only new versions added.
- 
-(https://dictionaries.crawlcoin.com/host/cnn.com/dictionary.json)[https://dictionaries.crawlcoin.com/host/cnn.com/dictionary.json] would contain `{"version":2}` in this case. 
+Usage
+---
 
-If 0 is specified for a particular dictionary, it is ignored (including shared).
+To use the bindings, you just need to import the ccc package, provider a dictionary provider, and compress/decompress.
 
-## NOTES
+Compression + decompression example with no error handling:
 
-Dictionary creation is based on [dictator](https://github.com/vkrasnov/dictator). 
+```go
+import (
+	"github.com/crawlcoin/ccc"
+)
 
-## Development
+func cccRoundtrip(input []byte) []byte {
+
+}
+```
+
+For a more complete roundtrip example, read the file `examples/url.go`
+
+```go
+import (
+	"github.com/crawlcoin/ccc"
+)
+```
+
+Development
+---
 
 ### Testing
 

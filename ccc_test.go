@@ -1,11 +1,10 @@
 package ccc
 
 import (
+	"compress/zlib"
 	"github.com/crawlcoin/ccc/providers"
 	"github.com/facebookgo/ensure"
 	"testing"
-	"compress/zlib"
-	"fmt"
 )
 
 func TestRoundtripZero(t *testing.T) {
