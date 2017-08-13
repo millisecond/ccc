@@ -5,7 +5,7 @@ A wrapper around Zlib and Brotli that lazy-loads versioned compression dictionar
 
 Dictionaries can be manually created or by using [dictator](https://github.com/vkrasnov/dictator).
 
-Part of the [Crawlcoin](https://crawlcoin.com) system but generally usable.
+Part of the [Crawlcoin](https://crawlcoin.com) web-scale crawling system.
 
 Overview
 ---
@@ -42,6 +42,8 @@ func cccRoundtrip(input []byte) []byte {
 ```
 
 Check out `providers/url_test.go` for complete examples of HTTP dictionaries and caching. 
+
+Full documentation available [on godoc](https://godoc.org/github.com/crawlcoin/ccc).
 
 Development
 ---
