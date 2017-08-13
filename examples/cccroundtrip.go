@@ -4,11 +4,10 @@ package examples
 
 import (
 	"github.com/crawlcoin/ccc"
-	"github.com/crawlcoin/ccc/providers"
 )
 
 func cccRoundtrip(input []byte) []byte {
-	mem := providers.NewMemoryDictionaryProvider()
+	mem := ccc.NewMemoryDictionaryProvider()
 	id := "test"
 	customVersion := 1
 	sharedVersion := 1

@@ -1,8 +1,7 @@
-package dictionary
+package ccc
 
 import (
 	"errors"
-	"github.com/crawlcoin/ccc/providers"
 )
 
 const SHARED = "shared"
@@ -13,7 +12,7 @@ type Version struct {
 	Version int
 }
 
-func Combined(p providers.DictionaryProvider, id string, customVersion int, sharedVersion int) ([]byte, error) {
+func Combined(p DictionaryProvider, id string, customVersion int, sharedVersion int) ([]byte, error) {
 	customDict, err := CustomDictionary(p, id, customVersion)
 	if err != nil {
 		return nil, err
@@ -29,14 +28,14 @@ func Append(dict1 []byte, dict2 []byte) []byte {
 	return append(dict1, dict2...)
 }
 
-func SharedDictionary(p providers.DictionaryProvider, version int) ([]byte, error) {
+func SharedDictionary(p DictionaryProvider, version int) ([]byte, error) {
 	if version == 0 {
 		return []byte{}, nil
 	}
 	return p.SharedDictionary(version)
 }
 
-func CustomDictionary(p providers.DictionaryProvider, id string, version int) ([]byte, error) {
+func CustomDictionary(p DictionaryProvider, id string, version int) ([]byte, error) {
 	if _, prs := INVALID_HOSTS[id]; prs {
 		return nil, errors.New("Invalid id, some names are reserved.")
 	}

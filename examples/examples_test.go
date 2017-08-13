@@ -1,8 +1,8 @@
 package examples
 
 import (
-	"testing"
 	"github.com/facebookgo/ensure"
+	"testing"
 )
 
 func TestRoundtrip(t *testing.T) {

@@ -1,11 +1,11 @@
-package providers
+package ccc
 
 import (
 	"github.com/facebookgo/ensure"
 	"io/ioutil"
 	"os"
-	"testing"
 	"path/filepath"
+	"testing"
 )
 
 func TestFileNotFound(t *testing.T) {

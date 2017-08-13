@@ -22,13 +22,13 @@ To use the bindings, you just need to import the ccc package, provider a diction
 Compression + decompression example with no error handling:
 
 ```go
+
 import (
 	"github.com/crawlcoin/ccc"
-	"github.com/crawlcoin/ccc/providers"
 )
 
 func cccRoundtrip(input []byte) []byte {
-	mem := providers.NewMemoryDictionaryProvider()
+	mem := ccc.NewMemoryDictionaryProvider()
 	id := "test"
 	customVersion := 1
 	sharedVersion := 1
@@ -39,6 +39,7 @@ func cccRoundtrip(input []byte) []byte {
 	decompressed, _ := ccc.BrotliDecompress(mem, compressed, id, customVersion, sharedVersion)
 	return decompressed
 }
+
 ```
 
 Check out `providers/url_test.go` for complete examples of HTTP dictionaries and caching. 

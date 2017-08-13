@@ -1,7 +1,6 @@
-package dictionary
+package ccc
 
 import (
-	"github.com/crawlcoin/ccc/providers"
 	"github.com/facebookgo/ensure"
 	"testing"
 )
@@ -11,7 +10,7 @@ func TestAppend(t *testing.T) {
 }
 
 func TestVersions(t *testing.T) {
-	provider := providers.NewMemoryDictionaryProvider()
+	provider := NewMemoryDictionaryProvider()
 	provider.SharedDictionaries = map[int][]byte{1: []byte("SHARED")}
 	provider.CustomDictionaries = map[string]map[int][]byte{"": {1: []byte("CUSTOM")}}
 
@@ -21,7 +20,7 @@ func TestVersions(t *testing.T) {
 }
 
 func TestZeroDictVersion(t *testing.T) {
-	provider := providers.FileDictionaryProvider{}
+	provider := FileDictionaryProvider{}
 
 	shared, err := SharedDictionary(provider, 0)
 	ensure.Nil(t, err)

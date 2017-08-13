@@ -2,14 +2,13 @@ package ccc
 
 import (
 	"compress/zlib"
-	"github.com/crawlcoin/ccc/providers"
 	"github.com/facebookgo/ensure"
 	"testing"
 )
 
 func TestRoundtripZero(t *testing.T) {
 	raw := []byte{1, 2, 3}
-	provider := providers.FileDictionaryProvider{}
+	provider := FileDictionaryProvider{}
 
 	compressed, err := BrotliCompress(provider, raw, "", 0, 0)
 	ensure.Nil(t, err)
@@ -29,7 +28,7 @@ func TestRoundtripZero(t *testing.T) {
 }
 
 func TestRoundtrip(t *testing.T) {
-	provider := providers.NewMemoryDictionaryProvider()
+	provider := NewMemoryDictionaryProvider()
 
 	id := "test"
 	customVersion := 1

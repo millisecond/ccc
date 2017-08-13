@@ -1,4 +1,4 @@
-package providers
+package ccc
 
 type DictionaryProvider interface {
 	// Return the bytes for a shared dictionary at a specific version
