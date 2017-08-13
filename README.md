@@ -39,7 +39,6 @@ func cccRoundtrip(input []byte) []byte {
 	decompressed, _ := ccc.BrotliDecompress(mem, compressed, id, customVersion, sharedVersion)
 	return decompressed
 }
-
 ```
 
 Check out `providers/url_test.go` for complete examples of HTTP dictionaries and caching. 
