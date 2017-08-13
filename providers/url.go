@@ -72,7 +72,7 @@ func (p *URLDictionaryProvider) fileOrRemote(base string, path string, shared bo
 	if shared {
 		localFilename = p.FSSharedPrefix
 	}
-	localFilename += path + "/" + strconv.Itoa(version) + ".dict"
+	localFilename += path + strconv.Itoa(version) + ".dict"
 	if p.UseMemoryCache {
 		dict, err = func() ([]byte, error) {
 			c, pres := p.cache.Get(localFilename)
@@ -86,8 +86,10 @@ func (p *URLDictionaryProvider) fileOrRemote(base string, path string, shared bo
 		return dict, nil
 	}
 	if p.UseFSCache {
-		if dict, err = ioutil.ReadFile(localFilename); err != nil {
-			return nil, err
+		dict, _ = ioutil.ReadFile(localFilename)
+		// ignore errors, fallback to URL
+		if len(dict) > 0 {
+			return dict, nil
 		}
 	}
 	if p.UseMemoryCache && len(dict) > 0 {

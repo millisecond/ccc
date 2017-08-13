@@ -76,12 +76,13 @@ func TestURLMemCache(t *testing.T) {
 
 func TestURLFSCache(t *testing.T) {
 	sharedCount = int32(0)
+	sharedDir, customDir := emptyTestDirs(t)
 
 	urlProvider, err := NewCachedURLDictionaryProvider(
 		"http://localhost:7080/shared/",
 		"http://localhost:7080/custom/",
 		false, 0,
-		true, "", "",
+		true, sharedDir, customDir,
 	)
 	ensure.Nil(t, err)
 

@@ -1,7 +1,6 @@
 package providers
 
 import (
-	"fmt"
 	"io/ioutil"
 	"strconv"
 )
@@ -32,6 +31,5 @@ func (p *FileDictionaryProvider) file(base string, path string, shared bool, ver
 		localFilename = p.BaseSharedDirectory
 	}
 	localFilename += path + strconv.Itoa(version) + ".dict"
-	fmt.Println(localFilename)
 	return ioutil.ReadFile(localFilename)
 }
